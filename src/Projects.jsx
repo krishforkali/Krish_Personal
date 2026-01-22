@@ -98,7 +98,7 @@ export default function Projects() {
               <div className="flex-grow flex items-center justify-center w-full relative">
                 <div className="bg-black/50 border border-white/10 p-4 rounded-xl text-xs w-full font-mono group-hover:scale-105 transition-transform duration-300 relative z-10">
                   <span className="text-green-400">$</span> init_sequence()<br />
-                  <span className="text-purple-400">>></span> Hello user.<br />
+                  <span className="text-purple-400">&gt;&gt;</span> Hello user.<br />
                   <span className="animate-pulse">_</span>
                 </div>
               </div>

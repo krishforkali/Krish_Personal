@@ -1,3 +1,6 @@
+/* Font Imports - Must be at the top */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rubik+Glitch&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,9 +34,6 @@
     background: color-mix(in srgb, var(--scrollbar-color), black 20%);
   }
 }
-
-/* Font Imports */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rubik+Glitch&display=swap');
 
 @layer utilities {
   .font-glitch {
