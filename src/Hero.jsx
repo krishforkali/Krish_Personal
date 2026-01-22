@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section id="hero" className="relative w-full h-screen overflow-hidden">
       {/* Background Images */}
       <img
         src="/herosectiondesktop.jpg"
@@ -23,6 +23,16 @@ export default function Hero() {
         <h1 className="text-white font-black text-5xl md:text-7xl tracking-tighter drop-shadow-md">
           KR
         </h1>
+      </div>
+
+      {/* Dynamic Island - Under Construction */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 md:top-12 z-50">
+        <div className="glass px-6 py-2 rounded-full flex items-center gap-3 animate-pulse border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+          <div className="w-2 h-2 rounded-full bg-yellow-500 animate-ping"></div>
+          <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-yellow-100">
+            Under Development
+          </span>
+        </div>
       </div>
 
       {/* Top Right Menu */}

@@ -8,18 +8,55 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    --scrollbar-color: #ffffff;
+    /* Default scrollbar color */
+  }
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color);
+    border-radius: 10px;
+    transition: background 0.3s ease-in-out;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--scrollbar-color), black 20%);
+  }
+}
+
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rubik+Glitch&display=swap');
+
+@layer utilities {
+  .font-glitch {
+    font-family: 'Rubik Glitch', system-ui;
+  }
+
+  .font-tech {
+    font-family: 'Orbitron', sans-serif;
   }
 }
 
 @layer components {
+
   /* Dark Glass - More elegant for dark backgrounds */
   .glass {
-    @apply bg-black/40 backdrop-blur-[20px] backdrop-saturate-[180%] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-[400ms];
+    @apply bg-black/40 backdrop-blur-[20px] backdrop-saturate-[180%] border border-white/10 transition-all duration-[400ms];
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .glass:hover {
-    @apply bg-black/60 border-white/20 shadow-[0_12px_48px_0_rgba(0,0,0,0.7)] -translate-y-2;
+    @apply bg-black/60 border-white/20 -translate-y-2;
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.7);
   }
 
   /* Neon Glass Glow - Pop effect */
@@ -30,7 +67,7 @@
 
   .glass-glow::before {
     @apply content-[''] absolute -top-[1px] -left-[1px] -right-[1px] -bottom-[1px] opacity-0 -z-10 blur-[15px] transition-opacity duration-500;
-    background: linear-gradient(45deg, #ff9eb3, #c7b3f0, #a8c7e8); 
+    background: linear-gradient(45deg, #ff9eb3, #c7b3f0, #a8c7e8);
   }
 
   .glass-glow:hover::before {

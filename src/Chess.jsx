@@ -106,23 +106,23 @@ const Chess = () => {
   const isValidMove = (row, col) => validMoves.some(([r, c]) => r === row && c === col);
 
   return (
-    <section className="relative min-h-screen overflow-visible font-sans p-0 bg-[#0f0f1e]">
+    <section id="chess" className="relative min-h-screen overflow-visible font-sans p-0 bg-[#0f0f1e]">
       {/* Background Glows (consistent with Projects) */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]"></div>
+        <div className="absolute top-[20%] left-[-10%] w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[20%] right-[-10%] w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] bg-purple-600/10 rounded-full blur-[100px]"></div>
       </div>
 
       {/* Grid Pattern Overlay */}
       <div className="absolute inset-0 z-[1] bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>
 
 
-      <div className="relative z-[5] max-w-[1400px] mx-auto py-20 px-[5%] min-h-screen flex flex-col justify-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[60px] items-center">
+      <div className="relative z-[5] max-w-[1400px] mx-auto py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-[5%] min-h-screen flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-[60px] items-center">
 
           {/* Chess Board Container */}
-          <div className="p-8 rounded-[30px] flex justify-center items-center glass-glow">
-            <div className="grid gap-0 w-full max-w-[500px] aspect-square border-4 border-white/20 rounded-xl overflow-hidden shadow-2xl"
+          <div className="p-4 sm:p-6 md:p-8 rounded-[30px] flex justify-center items-center glass-glow">
+            <div className="grid gap-0 w-full max-w-[500px] aspect-square border-2 sm:border-4 border-white/20 rounded-xl overflow-hidden shadow-2xl"
               style={{ gridTemplateRows: 'repeat(8, 1fr)' }}>
               {board.map((row, rowIndex) => (
                 <div key={rowIndex} className="grid gap-0" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
@@ -136,7 +136,7 @@ const Chess = () => {
                         hover:opacity-90`}
                       onClick={() => handleSquareClick(rowIndex, colIndex)}
                     >
-                      {piece && <span className="text-[2.5rem] lg:text-[2.8rem] select-none drop-shadow-md text-black font-bold">{piece}</span>}
+                      {piece && <span className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[2.8rem] select-none drop-shadow-md text-black font-bold">{piece}</span>}
                     </div>
                   ))}
                 </div>
@@ -145,22 +145,22 @@ const Chess = () => {
           </div>
 
           {/* Text Content */}
-          <div className="flex flex-col items-center text-center gap-6 text-white">
-            <div className="relative w-[150px] h-[150px] rounded-full flex justify-center items-center mb-4 glass animate-float">
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-6 text-white">
+            <div className="relative w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[150px] md:h-[150px] rounded-full flex justify-center items-center mb-2 sm:mb-4 glass animate-float">
               <div className="absolute w-full h-full bg-purple-500/20 rounded-full blur-xl animate-pulse"></div>
-              <div className="relative z-[1] text-[5rem]">🤖</div>
+              <div className="relative z-[1] text-[3rem] sm:text-[4rem] md:text-[5rem]">🤖</div>
             </div>
 
-            <h3 className="text-[3rem] font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 drop-shadow-sm">
-              Chess AI
+            <h3 className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 drop-shadow-sm">
+              Play chess with virtual Krish
             </h3>
 
-            <p className="text-lg text-white/70 max-w-[400px]">
+            <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-[400px] px-4">
               Challenge the machine. Test your strategic thinking in this interactive demonstration.
             </p>
 
             <button
-              className="py-4 px-12 rounded-full glass hover:bg-white/20 hover:scale-105 border border-white/20 text-white font-bold tracking-widest uppercase text-sm transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+              className="py-3 px-8 sm:py-4 sm:px-10 md:px-12 rounded-full glass hover:bg-white/20 hover:scale-105 border border-white/20 text-white font-bold tracking-widest uppercase text-xs sm:text-sm transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
               onClick={() => setBoard(initialBoard)}
             >
               Reset Game
