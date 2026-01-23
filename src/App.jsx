@@ -3,8 +3,11 @@ import Hero from './Hero'
 import Projects from './Projects'
 import Chess from './Chess'
 import Footer from './Footer'
+import Menu from './Menu'
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
   React.useEffect(() => {
     const handleScroll = (entries) => {
       entries.forEach((entry) => {
@@ -32,7 +35,8 @@ function App() {
 
   return (
     <div className="w-full min-h-screen overflow-x-hidden">
-      <Hero />
+      <Menu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <Hero onMenuClick={() => setIsMenuOpen(true)} />
       <Projects />
       <Chess />
       <Footer />

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Hero() {
+export default function Hero({ onMenuClick }) {
   return (
     <section id="hero" className="relative w-full h-screen overflow-hidden">
       {/* Background Images */}
@@ -36,7 +36,10 @@ export default function Hero() {
       </div>
 
       {/* Top Right Menu */}
-      <div className="absolute top-8 right-8 md:top-12 md:right-12 cursor-pointer z-10">
+      <div
+        onClick={onMenuClick}
+        className="absolute top-8 right-8 md:top-12 md:right-12 cursor-pointer z-10"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="40"
@@ -58,13 +61,15 @@ export default function Hero() {
       {/* Bottom Quote text */}
       <div className="absolute bottom-32 left-8 right-8 md:bottom-24 md:left-12 md:w-2/3 lg:w-1/2">
         <h2 className="text-white font-black text-4xl md:text-6xl lg:text-7xl uppercase leading-[0.9] drop-shadow-lg font-sans">
-          "If anything happens,<br />
-          <span className="text-white">I'm right behind you.</span>"
+          “If anything happens,<br />
+          <span className="text-white">I'm right behind you.</span>”
         </h2>
-        <p className="text-white font-semibold text-lg md:text-xl mt-4 drop-shadow-lg">
-          - Krish Motghare,20:th June 2024
+
+        <p className="mt-3 text-white/80 text-sm md:text-base italic tracking-wide drop-shadow-lg">
+          — Krish Motghare, 22 Oct
         </p>
       </div>
+
     </section>
   );
 }
