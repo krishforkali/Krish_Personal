@@ -19,14 +19,14 @@ export default function Hero({ onMenuClick }) {
       <div className="absolute inset-0 bg-black/10"></div> {/* Slight overlay for text readability if needed */}
 
       {/* Top Left Logo */}
-      <div className="absolute top-8 left-8 md:top-12 md:left-12">
+      <div className="fixed top-8 left-8 md:top-12 md:left-12 z-50">
         <h1 className="text-white font-black text-5xl md:text-7xl tracking-tighter drop-shadow-md">
           KR
         </h1>
       </div>
 
       {/* Dynamic Island - Under Construction */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 md:top-12 z-50">
+      <div className="fixed top-8 left-1/2 -translate-x-1/2 md:top-12 z-50">
         <div className="glass px-6 py-2 rounded-full flex items-center gap-3 animate-pulse border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
           <div className="w-2 h-2 rounded-full bg-yellow-500 animate-ping"></div>
           <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-yellow-100">
@@ -38,7 +38,7 @@ export default function Hero({ onMenuClick }) {
       {/* Top Right Menu */}
       <div
         onClick={onMenuClick}
-        className="absolute top-8 right-8 md:top-12 md:right-12 cursor-pointer z-10"
+        className="fixed top-8 right-8 md:top-12 md:right-12 cursor-pointer z-50"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
