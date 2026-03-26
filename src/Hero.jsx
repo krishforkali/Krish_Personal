@@ -2,74 +2,118 @@ import React from "react";
 
 export default function Hero({ onMenuClick }) {
   return (
-    <section id="hero" className="relative w-full h-screen overflow-hidden">
-      {/* Background Images */}
-      <img
-        src="/herosectiondesktop.jpg"
-        alt="Hero Background"
-        className="absolute inset-0 w-full h-full object-cover hidden md:block"
-      />
-      <img
-        src="/herosectionphone.jpg"
-        alt="Hero Background"
-        className="absolute inset-0 w-full h-full object-cover block md:hidden"
-      />
+    <>
+      {/* Animation Styles */}
+      <style>{`
+   
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
 
-      {/* Overlay Content */}
-      <div className="absolute inset-0 bg-black/10"></div> {/* Slight overlay for text readability if needed */}
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
 
-      {/* Top Left Logo */}
-      <div className="fixed top-8 left-8 md:top-12 md:left-12 z-50">
-        <h1 className="text-white font-black text-5xl md:text-7xl tracking-tighter drop-shadow-md">
-          KR
-        </h1>
-      </div>
+        .animate-fadeInLeftScale {
+          animation: fadeInLeftScale 2.5s ease-out forwards;
+        }
 
-      {/* Dynamic Island - Under Construction */}
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 md:top-12 z-50">
-        <div className="glass px-6 py-2 rounded-full flex items-center gap-3 animate-pulse border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-          <div className="w-2 h-2 rounded-full bg-yellow-500 animate-ping"></div>
-          <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-yellow-100">
-            Under Development
-          </span>
+        .animate-fadeInRightScale {
+          animation: fadeInRightScale 2.5s ease-out forwards;
+        }
+
+        .animate-fadeInDown {
+          animation: fadeInDown 1.3s ease-out 0.2s forwards;
+          opacity: 0;
+        }
+
+        .animate-fadeInUp {
+          animation: fadeInUp 1.3s ease-out 0.4s forwards;
+          opacity: 0;
+        }
+      `}</style>
+
+      <section id="hero" className="relative w-full h-screen overflow-hidden">
+        {/* Background Images */}
+        <img
+          src="/herosectiondesktop.jpg"
+          alt="Hero Background"
+          className="absolute inset-0 w-full h-full object-cover hidden md:block"
+        />
+        <img
+          src="/herosectionphone.jpg"
+          alt="Hero Background"
+          className="absolute inset-0 w-full h-full object-cover block md:hidden"
+        />
+
+        <div className="absolute inset-0 bg-black/10"></div>
+
+        {/* Logo – fade from left */}
+        <div className="fixed top-8 left-8 md:top-12 md:left-12 z-50 animate-fadeInLeftScale">
+          <h1 className="text-white font-black text-5xl md:text-7xl tracking-tighter drop-shadow-md">
+            KR
+          </h1>
         </div>
-      </div>
 
-      {/* Top Right Menu */}
-      <div
-        onClick={onMenuClick}
-        className="fixed top-8 right-8 md:top-12 md:right-12 cursor-pointer z-50"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="white"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="drop-shadow-md hover:scale-110 transition-transform"
+        {/* Dynamic Island – fade down */}
+        <div className="fixed top-8 left-1/2 md:top-12 z-50 animate-fadeInDown">
+          <div className="glass px-6 py-2 rounded-full flex items-center gap-3 border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+            <div className="w-2 h-2 rounded-full bg-yellow-500 animate-ping"></div>
+            <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-yellow-100">
+              Under Development
+            </span>
+          </div>
+        </div>
+
+        {/* Menu – fade from right */}
+        <div
+          onClick={onMenuClick}
+          className="fixed top-8 right-8 md:top-12 md:right-12 cursor-pointer z-50 animate-fadeInRightScale"
         >
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="drop-shadow-md hover:scale-110 transition-transform"
+          >
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </div>
 
-      {/* Bottom Quote text */}
-      <div className="absolute bottom-32 left-8 right-8 md:bottom-24 md:left-12 md:w-2/3 lg:w-1/2">
-        <h2 className="text-white font-black text-4xl md:text-6xl lg:text-7xl uppercase leading-[0.9] drop-shadow-lg font-sans">
-          “If anything happens,<br />
-          <span className="text-white">I'm right behind you.</span>”
-        </h2>
+        {/* Quote – fade up */}
+        <div className="absolute bottom-32 left-8 right-8 md:bottom-24 md:left-12 md:w-2/3 lg:w-1/2 animate-fadeInUp">
+          <h2 className="text-white font-black text-4xl md:text-6xl lg:text-7xl uppercase leading-[0.9] drop-shadow-lg font-sans">
+            “If anything happens,<br />
+            <span className="text-white">I'm right behind you.</span>”
+          </h2>
 
-        <p className="mt-3 text-white/80 text-sm md:text-base italic tracking-wide drop-shadow-lg">
-          — Krish Motghare, 22 Oct
-        </p>
-      </div>
-
-    </section>
+          <p className="mt-3 text-white/80 text-sm md:text-base italic tracking-wide drop-shadow-lg">
+            — Krish Motghare, 22 Oct
+          </p>
+        </div>
+      </section>
+    </>
   );
 }

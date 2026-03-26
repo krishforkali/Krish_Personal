@@ -14,8 +14,8 @@ function App() {
         if (entry.isIntersecting) {
           let color = '#ffffff'; // Default
           if (entry.target.id === 'hero') color = '#ffffff';
-          if (entry.target.id === 'projects') color = '#a855f7'; // Purple
-          if (entry.target.id === 'chess') color = '#4ade80'; // Green
+          if (entry.target.id === 'chess') color = '#f3b7a0'; // Sunset peach
+          if (entry.target.id === 'projects') color = '#f29cbc'; // Sunset rose
           if (entry.target.id === 'footer') color = '#3b82f6'; // Blue
 
           document.body.style.setProperty('--scrollbar-color', color);

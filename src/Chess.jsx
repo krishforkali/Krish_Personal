@@ -1,168 +1,290 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from "react";
 
-const Chess = () => {
-  const initialBoard = [
-    ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
-    ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
-    ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
-  ];
+const createInitialBoard = () => [
+  ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
+  ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
+  ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
+];
 
-  const [board, setBoard] = useState(initialBoard);
+const whitePieces = ["♙", "♖", "♘", "♗", "♕", "♔"];
+const blackPieces = ["♟", "♜", "♞", "♝", "♛", "♚"];
+const files = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+const isWhitePiece = (piece) => whitePieces.includes(piece);
+const isBlackPiece = (piece) => blackPieces.includes(piece);
+const isOpponent = (piece, turn) =>
+  piece && ((turn === "white" && isBlackPiece(piece)) || (turn === "black" && isWhitePiece(piece)));
+
+const scanLineMoves = (board, row, col, directions, turn) => {
+  const moves = [];
+
+  directions.forEach(([dr, dc]) => {
+    for (let step = 1; step < 8; step += 1) {
+      const newRow = row + dr * step;
+      const newCol = col + dc * step;
+
+      if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) break;
+
+      const target = board[newRow][newCol];
+      if (!target) {
+        moves.push([newRow, newCol]);
+        continue;
+      }
+
+      if (isOpponent(target, turn)) {
+        moves.push([newRow, newCol]);
+      }
+      break;
+    }
+  });
+
+  return moves;
+};
+
+const getValidMoves = (board, row, col, piece, turn) => {
+  const moves = [];
+
+  if (!piece) return moves;
+
+  if ((turn === "white" && !isWhitePiece(piece)) || (turn === "black" && !isBlackPiece(piece))) {
+    return moves;
+  }
+
+  if (piece === "♙") {
+    if (row > 0 && !board[row - 1][col]) moves.push([row - 1, col]);
+    if (row === 6 && !board[row - 1][col] && !board[row - 2][col]) moves.push([row - 2, col]);
+    if (row > 0 && col > 0 && isBlackPiece(board[row - 1][col - 1])) moves.push([row - 1, col - 1]);
+    if (row > 0 && col < 7 && isBlackPiece(board[row - 1][col + 1])) moves.push([row - 1, col + 1]);
+  }
+
+  if (piece === "♟") {
+    if (row < 7 && !board[row + 1][col]) moves.push([row + 1, col]);
+    if (row === 1 && !board[row + 1][col] && !board[row + 2][col]) moves.push([row + 2, col]);
+    if (row < 7 && col > 0 && isWhitePiece(board[row + 1][col - 1])) moves.push([row + 1, col - 1]);
+    if (row < 7 && col < 7 && isWhitePiece(board[row + 1][col + 1])) moves.push([row + 1, col + 1]);
+  }
+
+  if (["♖", "♜"].includes(piece)) {
+    moves.push(...scanLineMoves(board, row, col, [[0, 1], [0, -1], [1, 0], [-1, 0]], turn));
+  }
+
+  if (["♗", "♝"].includes(piece)) {
+    moves.push(...scanLineMoves(board, row, col, [[1, 1], [1, -1], [-1, 1], [-1, -1]], turn));
+  }
+
+  if (["♕", "♛"].includes(piece)) {
+    moves.push(
+      ...scanLineMoves(
+        board,
+        row,
+        col,
+        [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]],
+        turn,
+      ),
+    );
+  }
+
+  if (["♘", "♞"].includes(piece)) {
+    [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]].forEach(([dr, dc]) => {
+      const newRow = row + dr;
+      const newCol = col + dc;
+      if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) return;
+      const target = board[newRow][newCol];
+      if (!target || isOpponent(target, turn)) moves.push([newRow, newCol]);
+    });
+  }
+
+  if (["♔", "♚"].includes(piece)) {
+    [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]].forEach(([dr, dc]) => {
+      const newRow = row + dr;
+      const newCol = col + dc;
+      if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) return;
+      const target = board[newRow][newCol];
+      if (!target || isOpponent(target, turn)) moves.push([newRow, newCol]);
+    });
+  }
+
+  return moves;
+};
+
+const formatSquare = (row, col) => `${files[col]}${8 - row}`;
+
+export default function Chess() {
+  const [board, setBoard] = useState(createInitialBoard);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [validMoves, setValidMoves] = useState([]);
+  const [turn, setTurn] = useState("white");
+  const [moveCount, setMoveCount] = useState(0);
+  const [hoveredSquare, setHoveredSquare] = useState(null);
 
-  const isWhitePiece = (piece) => ['♙', '♖', '♘', '♗', '♕', '♔'].includes(piece);
-  const isBlackPiece = (piece) => ['♟', '♜', '♞', '♝', '♛', '♚'].includes(piece);
+  const boardGlow = useMemo(
+    () =>
+      turn === "white"
+        ? "shadow-[0_0_30px_rgba(255,215,198,0.32)]"
+        : "shadow-[0_0_30px_rgba(164,197,255,0.28)]",
+    [turn],
+  );
 
-  const getValidMoves = (row, col, piece) => {
-    const moves = [];
-    const isWhite = isWhitePiece(piece);
-
-    // Basic move logic (simplified for portfolio demo)
-    // Pawn
-    if (piece === '♙') {
-      if (row > 0 && !board[row - 1][col]) moves.push([row - 1, col]);
-      if (row === 6 && !board[row - 2][col] && !board[row - 1][col]) moves.push([row - 2, col]);
-      if (row > 0 && col > 0 && isBlackPiece(board[row - 1][col - 1])) moves.push([row - 1, col - 1]);
-      if (row > 0 && col < 7 && isBlackPiece(board[row - 1][col + 1])) moves.push([row - 1, col + 1]);
-    } else if (piece === '♟') {
-      if (row < 7 && !board[row + 1][col]) moves.push([row + 1, col]);
-      if (row === 1 && !board[row + 2][col] && !board[row + 1][col]) moves.push([row + 2, col]);
-      if (row < 7 && col > 0 && isWhitePiece(board[row + 1][col - 1])) moves.push([row + 1, col - 1]);
-      if (row < 7 && col < 7 && isWhitePiece(board[row + 1][col + 1])) moves.push([row + 1, col + 1]);
-    }
-
-    // Rook logic (horizontal/vertical)
-    if (['♖', '♜'].includes(piece)) {
-      const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
-      directions.forEach(([dr, dc]) => {
-        for (let i = 1; i < 8; i++) {
-          const newRow = row + dr * i;
-          const newCol = col + dc * i;
-          if (newRow < 0 || newRow > 7 || newCol < 0 || newCol > 7) break;
-          if (!board[newRow][newCol]) {
-            moves.push([newRow, newCol]);
-          } else {
-            if ((isWhite && isBlackPiece(board[newRow][newCol])) || (!isWhite && isWhitePiece(board[newRow][newCol]))) {
-              moves.push([newRow, newCol]);
-            }
-            break;
-          }
-        }
-      });
-    }
-
-    // Knight moves
-    if (['♘', '♞'].includes(piece)) {
-      const knightMoves = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
-      knightMoves.forEach(([dr, dc]) => {
-        const newRow = row + dr;
-        const newCol = col + dc;
-        if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-          if (!board[newRow][newCol] || (isWhite && isBlackPiece(board[newRow][newCol])) || (!isWhite && isWhitePiece(board[newRow][newCol]))) {
-            moves.push([newRow, newCol]);
-          }
-        }
-      });
-    }
-    // Note: Other pieces (Bishop, Queen, King) logic omitted for brevity in portfolio verification, but can be added. 
-    // Keeping it simple to ensure the visual update is the focus.
-
-    return moves;
+  const resetGame = () => {
+    setBoard(createInitialBoard());
+    setSelectedSquare(null);
+    setValidMoves([]);
+    setTurn("white");
+    setMoveCount(0);
+    setHoveredSquare(null);
   };
 
   const handleSquareClick = (rowIndex, colIndex) => {
     const piece = board[rowIndex][colIndex];
+
     if (selectedSquare) {
       const [selectedRow, selectedCol] = selectedSquare;
-      const isValidMove = validMoves.some(([r, c]) => r === rowIndex && c === colIndex);
-      if (isValidMove) {
-        const newBoard = board.map(row => [...row]);
+      const chosenMove = validMoves.some(([r, c]) => r === rowIndex && c === colIndex);
+
+      if (chosenMove) {
+        const newBoard = board.map((row) => [...row]);
+
         newBoard[rowIndex][colIndex] = newBoard[selectedRow][selectedCol];
-        newBoard[selectedRow][selectedCol] = '';
+        newBoard[selectedRow][selectedCol] = "";
+
         setBoard(newBoard);
         setSelectedSquare(null);
         setValidMoves([]);
-      } else {
-        setSelectedSquare(null);
-        setValidMoves([]);
-        if (piece) {
-          setSelectedSquare([rowIndex, colIndex]);
-          setValidMoves(getValidMoves(rowIndex, colIndex, piece));
-        }
+        setMoveCount((current) => current + 1);
+        setTurn((current) => (current === "white" ? "black" : "white"));
+        return;
       }
-    } else if (piece) {
-      setSelectedSquare([rowIndex, colIndex]);
-      setValidMoves(getValidMoves(rowIndex, colIndex, piece));
     }
+
+    if (!piece) {
+      setSelectedSquare(null);
+      setValidMoves([]);
+      return;
+    }
+
+    if ((turn === "white" && isBlackPiece(piece)) || (turn === "black" && isWhitePiece(piece))) {
+      return;
+    }
+
+    setSelectedSquare([rowIndex, colIndex]);
+    setValidMoves(getValidMoves(board, rowIndex, colIndex, piece, turn));
   };
 
   const isSelected = (row, col) => selectedSquare && selectedSquare[0] === row && selectedSquare[1] === col;
   const isValidMove = (row, col) => validMoves.some(([r, c]) => r === row && c === col);
 
   return (
-    <section id="chess" className="relative min-h-screen overflow-visible font-sans p-0 bg-[#0f0f1e]">
-      {/* Background Glows (consistent with Projects) */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[20%] left-[-10%] w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px] bg-blue-600/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[20%] right-[-10%] w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] bg-purple-600/10 rounded-full blur-[100px]"></div>
+    <section id="chess" className="relative overflow-hidden px-4 py-24 sm:px-6 md:px-[5%]">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#f4b6a0_0%,#e89a8c_36%,#c9b7b5_62%,#bfa6a0_82%,#a88c86_100%)]" />
+        <div className="absolute inset-0 bg-[url('/herosectiondesktop.jpg')] bg-cover bg-center opacity-[0.16] blur-[3px] scale-105" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,244,237,0.42),transparent_32%),radial-gradient(circle_at_bottom,rgba(127,89,98,0.14),transparent_30%)]" />
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-[12px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:44px_44px] opacity-15" />
       </div>
 
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 z-[1] bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>
-
-
-      <div className="relative z-[5] max-w-[1400px] mx-auto py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-[5%] min-h-screen flex flex-col justify-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-[60px] items-center">
-
-          {/* Chess Board Container */}
-          <div className="p-4 sm:p-6 md:p-8 rounded-[30px] flex justify-center items-center glass-glow">
-            <div className="grid gap-0 w-full max-w-[500px] aspect-square border-2 sm:border-4 border-white/20 rounded-xl overflow-hidden shadow-2xl"
-              style={{ gridTemplateRows: 'repeat(8, 1fr)' }}>
-              {board.map((row, rowIndex) => (
-                <div key={rowIndex} className="grid gap-0" style={{ gridTemplateColumns: 'repeat(8, 1fr)' }}>
-                  {row.map((piece, colIndex) => (
-                    <div
-                      key={`${rowIndex}-${colIndex}`}
-                      className={`aspect-square flex justify-center items-center transition-all duration-300 cursor-pointer relative
-                        ${(rowIndex + colIndex) % 2 === 0 ? 'bg-[#ebecd0]' : 'bg-[#779556]'}
-                        ${isSelected(rowIndex, colIndex) ? '!bg-yellow-200/80 shadow-[inset_0_0_20px_rgba(255,200,50,0.5)]' : ''}
-                        ${isValidMove(rowIndex, colIndex) ? 'after:content-[""] after:absolute after:w-4 after:h-4 after:rounded-full after:bg-black/20' : ''}
-                        hover:opacity-90`}
-                      onClick={() => handleSquareClick(rowIndex, colIndex)}
-                    >
-                      {piece && <span className="text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[2.8rem] select-none drop-shadow-md text-black font-bold">{piece}</span>}
-                    </div>
-                  ))}
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div className={`rounded-[34px] border border-white/16 bg-white/10 p-5 backdrop-blur-[22px] ${boardGlow}`}>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-white/14 bg-white/10 px-5 py-4">
+              <div>
+                <p className="font-tech text-[10px] uppercase tracking-[0.35em] text-white/50">Current Turn</p>
+                <p className="mt-1 text-lg font-bold uppercase tracking-[0.18em] text-white drop-shadow-[0_8px_24px_rgba(255,255,255,0.2)]">
+                  {turn === "white" ? "White To Move" : "Black To Move"}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <div className="rounded-2xl border border-white/12 bg-white/12 px-4 py-3 text-center">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/50">Moves</p>
+                  <p className="mt-1 text-lg font-bold text-white">{moveCount}</p>
                 </div>
-              ))}
+                <div className="rounded-2xl border border-white/12 bg-white/12 px-4 py-3 text-center">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/50">Hover</p>
+                  <p className="mt-1 text-lg font-bold text-white">
+                    {hoveredSquare ? formatSquare(hoveredSquare[0], hoveredSquare[1]) : "--"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-white/18 bg-black/20 p-3 sm:p-4">
+              <div
+                className="grid aspect-square w-full overflow-hidden rounded-[22px] border border-white/15"
+                style={{ gridTemplateRows: "repeat(8, 1fr)" }}
+              >
+                {board.map((row, rowIndex) => (
+                  <div key={rowIndex} className="grid" style={{ gridTemplateColumns: "repeat(8, 1fr)" }}>
+                    {row.map((piece, colIndex) => (
+                      <button
+                        key={`${rowIndex}-${colIndex}`}
+                        type="button"
+                        className={`group relative flex aspect-square items-center justify-center transition duration-300
+                          ${(rowIndex + colIndex) % 2 === 0 ? "bg-[#f4e5dc]" : "bg-[#b98e86]"}
+                          ${isSelected(rowIndex, colIndex) ? "ring-2 ring-inset ring-[#fff3d0]" : ""}
+                          hover:brightness-105`}
+                        onClick={() => handleSquareClick(rowIndex, colIndex)}
+                        onMouseEnter={() => setHoveredSquare([rowIndex, colIndex])}
+                        onMouseLeave={() => setHoveredSquare(null)}
+                      >
+                        <span className="absolute left-1.5 top-1 text-[9px] font-bold text-black/30">
+                          {colIndex === 0 ? 8 - rowIndex : ""}
+                        </span>
+                        <span className="absolute bottom-1.5 right-1.5 text-[9px] font-bold text-black/30">
+                          {rowIndex === 7 ? files[colIndex] : ""}
+                        </span>
+
+                        {isValidMove(rowIndex, colIndex) && (
+                          <span className="absolute h-4 w-4 rounded-full bg-black/18 shadow-[0_0_14px_rgba(255,255,255,0.45)]" />
+                        )}
+
+                        {piece && (
+                          <span className="relative z-10 text-[1.85rem] drop-shadow-[0_6px_14px_rgba(0,0,0,0.28)] transition-transform duration-200 group-hover:scale-110 sm:text-[2.35rem] md:text-[2.6rem]">
+                            {piece}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Text Content */}
-          <div className="flex flex-col items-center text-center gap-4 sm:gap-6 text-white">
-            <div className="relative w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[150px] md:h-[150px] rounded-full flex justify-center items-center mb-2 sm:mb-4 glass animate-float">
-              <div className="absolute w-full h-full bg-purple-500/20 rounded-full blur-xl animate-pulse"></div>
-              <div className="relative z-[1] text-[3rem] sm:text-[4rem] md:text-[5rem]">🤖</div>
+          <div className="rounded-[34px] border border-white/16 bg-white/10 p-7 text-center backdrop-blur-[22px]">
+            <div className="relative mx-auto flex h-[120px] w-[120px] items-center justify-center rounded-full bg-white/14 shadow-[0_0_45px_rgba(255,255,255,0.18)]">
+              <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.32),transparent_65%)]" />
+              <span className="relative text-[4rem]">♞</span>
             </div>
 
-            <h3 className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 drop-shadow-sm">
-              Play chess with virtual Krish
+            <p className="mt-8 font-tech text-[11px] uppercase tracking-[0.35em] text-white/58">Golden Hour Mode</p>
+            <h3 className="mt-4 text-[2.4rem] font-black uppercase tracking-[-0.05em] text-white md:text-[3rem]">
+              Play Chess With Virtual Krish
             </h3>
-
-            <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-[400px] px-4">
-              Challenge the machine. Test your strategic thinking in this interactive demonstration.
+            <p className="mx-auto mt-5 max-w-[34ch] text-sm leading-8 text-white/80 md:text-base">
+              A softer, cinematic chess section designed to follow the portfolio mood while still letting you interact with the board and play through moves.
             </p>
 
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              {["Sunset Blend", "Glass Board", "Smooth Hover", "Playable Demo"].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/16 bg-white/12 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/80"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
             <button
-              className="py-3 px-8 sm:py-4 sm:px-10 md:px-12 rounded-full glass hover:bg-white/20 hover:scale-105 border border-white/20 text-white font-bold tracking-widest uppercase text-xs sm:text-sm transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-              onClick={() => setBoard(initialBoard)}
+              className="mt-9 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/14 px-7 py-3 font-tech text-xs uppercase tracking-[0.28em] text-white transition hover:bg-white/20"
+              onClick={resetGame}
             >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/18">↺</span>
               Reset Game
             </button>
           </div>
@@ -170,6 +292,4 @@ const Chess = () => {
       </div>
     </section>
   );
-};
-
-export default Chess;
+}
